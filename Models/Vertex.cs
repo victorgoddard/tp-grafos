@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace graph_tp.Models
 {
-    internal class Vertex
+    public class Vertex
     {
 
         private string _title;
         private int _id;
+
+        public string Name => _title;
 
         public Vertex(int id, string title = "")
         {

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Algorithms\Results\" />
     <Folder Include="Data\" />
     <Folder Include="Docs\" />
   </ItemGroup>

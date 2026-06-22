@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace graph_tp.Algorithms
 {
-    internal class FordFulkersonAlgorithm
+    public class FordFulkersonAlgorithm
     {
         // Retorna verdadeiro se existir um caminho da fonte (s) para o sorvedouro (t)
         // no grafo residual. Também preenche a matriz parent[] para armazenar o caminho.

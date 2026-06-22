@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace graph_tp.Models
 {
-    internal class Edge
+    public class Edge
     {
         private Vertex _source;
         private Vertex _target;
@@ -18,6 +18,10 @@ namespace graph_tp.Models
         private double _residualCapacity;
         public double Low { get; set; }
 
+        public Vertex Source => _source;
+        public Vertex Target => _source;
+        public double LoadValue => _loadValue;
+        public double Capacity => _capacity;
 
         public Edge(Vertex source, Vertex target, double loadValue, double capacity = double.PositiveInfinity, double flow = 0)
         {

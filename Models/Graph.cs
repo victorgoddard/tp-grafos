@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace graph_tp.Models
 {
-    internal class Graph
+    public class Graph
     {
         private readonly Dictionary<int, Vertex> _vertexes;
         private readonly Dictionary<int, List<Edge>> _adjacencyList;
@@ -21,7 +21,7 @@ namespace graph_tp.Models
             _adjacencyList = new Dictionary<int, List<Edge>>();
         }
 
-        public void Addvertex(Vertex vertex)
+        public void AddVertex(Vertex vertex)
         {
             if (!_vertexes.ContainsKey(vertex.GetHashCode()))
             {
@@ -32,13 +32,13 @@ namespace graph_tp.Models
 
         public void AddEdge(Edge edge)
         {
-            Addvertex(edge.Source);
-            Addvertex(edge.Target);
+            AddVertex(edge.Source);
+            AddVertex(edge.Target);
 
-            _adjacencyList[edge.Source.Id].Add(edge);
+            _adjacencyList[edge.Source.GetHashCode()].Add(edge);
         }
 
-        public Vertex? Getvertex(int id)
+        public Vertex? GetVertex(int id)
         {
             return _vertexes.TryGetValue(id, out var vertex) ? vertex : null;
         }
@@ -53,7 +53,7 @@ namespace graph_tp.Models
             var incoming = new List<Edge>();
             foreach (var edges in _adjacencyList.Values)
             {
-                incoming.AddRange(edges.Where(e => e.Target.Id == vertexId));
+                incoming.AddRange(edges.Where(e => e.Target.GetHashCode() == vertexId));
             }
             return incoming;
         }
@@ -89,14 +89,14 @@ namespace graph_tp.Models
 
             foreach (var vertex in _vertexes.Values)
             {
-                clone.Addvertex(new Vertex(vertex.GetHashCode(), vertex.Name));
+                clone.AddVertex(new Vertex(vertex.GetHashCode(), vertex.Name));
             }
 
             foreach (var edge in GetAllEdges())
             {
-                var sourceClone = clone.Getvertex(edge.Source.Id)!;
-                var targetClone = clone.Getvertex(edge.Target.Id)!;
-                clone.AddEdge(new Edge(sourceClone, targetClone, edge.Cost, edge.Capacity));
+                var sourceClone = clone.GetVertex(edge.Source.GetHashCode())!;
+                var targetClone = clone.GetVertex(edge.Target.GetHashCode())!;
+                clone.AddEdge(new Edge(sourceClone, targetClone, edge.LoadValue, edge.Capacity));
             }
 
             return clone;
