@@ -6,27 +6,12 @@ using System.Linq;
 
 namespace graph_tp.Algorithms
 {
-	/// <summary>
-	/// Cenário B – Percurso de Hubs (Ciclo Hamiltoniano).
-	///
-	/// Verifica se o inspetor consegue visitar todos os hubs (vértices) exatamente
-	/// uma vez, retornando ao hub inicial. Este é o problema do Ciclo Hamiltoniano,
-	/// que é NP-completo: não há algoritmo eficiente conhecido. A solução exata é
-	/// obtida por backtracking — construímos o trajeto hub a hub, retrocedendo
-	/// sempre que um caminho parcial não puder ser estendido.
-	///
-	/// A malha é tratada como NÃO direcionada (mesma premissa do Cenário A): uma
-	/// rota A->B permite o deslocamento do inspetor em qualquer sentido.
-	/// </summary>
 	public class HamiltonAlgorithm
 	{
 		public class HamiltonianResult
 		{
 			public bool IsPossible { get; set; }
-
-			// Sequência de hubs do ciclo (o primeiro hub repete-se ao final, fechando o ciclo).
 			public List<Vertex> Cycle { get; } = new List<Vertex>();
-
 			public string Reason { get; set; } = string.Empty;
 		}
 
@@ -48,7 +33,6 @@ namespace graph_tp.Algorithms
 
 			if (n == 1)
 			{
-				// Um único hub: trivialmente "visitado", ciclo degenerado.
 				result.IsPossible = true;
 				var only = graph.GetVertex(vertexIds[0])!;
 				result.Cycle.Add(only);
@@ -57,27 +41,23 @@ namespace graph_tp.Algorithms
 				return result;
 			}
 
-			// Mapeia cada id de vértice para um índice contíguo [0..n-1].
 			var indexOf = new Dictionary<int, int>();
 			for (int i = 0; i < n; i++)
 				indexOf[vertexIds[i]] = i;
 
-			// Matriz de adjacência não direcionada entre hubs.
 			bool[,] adjacent = new bool[n, n];
 			foreach (var edge in graph.GetAllEdges())
 			{
 				int u = indexOf[edge.Source.GetHashCode()];
 				int v = indexOf[edge.Target.GetHashCode()];
 				if (u == v)
-					continue; // laços não contribuem para o ciclo hamiltoniano.
+					continue;
 
 				adjacent[u, v] = true;
 				adjacent[v, u] = true;
 				logger?.LogAlgorithmAction($"Hamiltoniano: adjacência registrada entre {vertexIds[u]} e {vertexIds[v]}.");
 			}
 
-			// Backtracking iniciando sempre pelo hub 0 (qualquer hub serve como início,
-			// pois um ciclo hamiltoniano pode ser "rotacionado" para começar em qualquer vértice).
 			var path = new int[n];
 			var used = new bool[n];
 
@@ -91,7 +71,6 @@ namespace graph_tp.Algorithms
 				foreach (int idx in path)
 					result.Cycle.Add(graph.GetVertex(vertexIds[idx])!);
 
-				// Fecha o ciclo retornando ao hub inicial.
 				result.Cycle.Add(graph.GetVertex(vertexIds[path[0]])!);
 				logger?.LogAlgorithmAction("Hamiltoniano: ciclo encontrado com sucesso.");
 			}
@@ -106,8 +85,6 @@ namespace graph_tp.Algorithms
 			return result;
 		}
 
-		// Tenta posicionar um hub na posição 'pos' do trajeto. Quando todos os hubs
-		// foram posicionados, verifica se o último se conecta de volta ao inicial.
 		private static bool Solve(bool[,] adjacent, int[] path, bool[] used, int n, int pos, List<int> vertexIds, QueryLogger? logger)
 		{
 			if (pos == n)
@@ -122,7 +99,6 @@ namespace graph_tp.Algorithms
 				if (used[candidate])
 					continue;
 
-				// O candidato precisa ser adjacente ao último hub do trajeto parcial.
 				if (!adjacent[path[pos - 1], candidate])
 					continue;
 
@@ -137,7 +113,6 @@ namespace graph_tp.Algorithms
 					return true;
 				}
 
-				// Retrocede: o candidato não levou a uma solução.
 				used[candidate] = false;
 				logger?.LogAlgorithmAction($"Hamiltoniano: retrocedendo do candidato {vertexIds[candidate]} na posição {pos}.");
 			}

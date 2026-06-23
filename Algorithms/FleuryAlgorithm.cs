@@ -6,23 +6,8 @@ using System.Linq;
 
 namespace graph_tp.Algorithms
 {
-	/// <summary>
-	/// Cenário A – Percurso de Rotas (Caminho/Circuito Euleriano).
-	///
-	/// Verifica se o inspetor consegue percorrer todas as rotas (arestas) exatamente
-	/// uma vez. Caso seja possível um circuito (todos os vértices com grau par), o
-	/// percurso retorna ao ponto de partida. Caso exista exatamente um par de vértices
-	/// de grau ímpar, ainda há um caminho euleriano (sem retorno ao início).
-	///
-	/// A malha é tratada como NÃO direcionada: uma rota A->B pode ser inspecionada
-	/// em qualquer sentido, então o que importa é o grau (número de rotas incidentes)
-	/// de cada hub. Multigrafos (múltiplas rotas entre o mesmo par de hubs) são
-	/// suportados, pois cada aresta é identificada individualmente.
-	/// </summary>
 	public class FleuryAlgorithm
 	{
-		// Representação interna de uma rota como aresta não direcionada, mantendo
-		// um identificador único (para multigrafos) e a referência à aresta original.
 		private class UndirectedRoute
 		{
 			public int Id { get; }
@@ -37,31 +22,22 @@ namespace graph_tp.Algorithms
 				V = v;
 				Original = original;
 			}
-
-			// Dado um extremo conhecido, retorna o extremo oposto da rota.
 			public int Other(int from) => from == U ? V : U;
 		}
 
 		public enum EulerianKind
 		{
-			None,    // Não existe percurso euleriano.
-			Path,    // Existe caminho euleriano (não retorna à origem).
-			Circuit  // Existe circuito euleriano (retorna à origem).
+			None,
+			Path,
+			Circuit
 		}
 
 		public class EulerianResult
 		{
 			public EulerianKind Kind { get; set; } = EulerianKind.None;
-
-			// Sequência de hubs visitados, na ordem do percurso.
 			public List<Vertex> VertexSequence { get; } = new List<Vertex>();
-
-			// Rotas percorridas, na ordem em que foram atravessadas.
 			public List<Edge> RouteSequence { get; } = new List<Edge>();
-
-			// Justificativa textual quando o percurso não é possível.
 			public string Reason { get; set; } = string.Empty;
-
 			public bool IsPossible => Kind != EulerianKind.None;
 		}
 
@@ -70,7 +46,6 @@ namespace graph_tp.Algorithms
 			var result = new EulerianResult();
 			logger?.LogAlgorithmAction("Fleury iniciado.");
 
-			// Constrói a representação não direcionada (cada rota vira uma aresta {u,v}).
 			var routes = new List<UndirectedRoute>();
 			var adjacency = new Dictionary<int, List<UndirectedRoute>>();
 
@@ -99,10 +74,6 @@ namespace graph_tp.Algorithms
 				return result;
 			}
 
-			// 1. Verifica os vértices de grau ímpar.
-			//    - 0 ímpares  -> circuito euleriano (retorna à origem).
-			//    - 2 ímpares  -> caminho euleriano (inicia em um ímpar, não retorna).
-			//    - >= 3 ímpares (na prática 4, 6, ...) -> PARE: não existe percurso.
 			var oddVertices = adjacency
 				.Where(kv => kv.Value.Count % 2 != 0)
 				.Select(kv => kv.Key)
@@ -118,8 +89,6 @@ namespace graph_tp.Algorithms
 			}
 			logger?.LogAlgorithmAction($"Fleury: vértices de grau ímpar = {oddVertices.Count}.");
 
-			// Verifica conectividade: todas as rotas precisam pertencer a um único
-			// componente conexo (hubs isolados, sem rotas, são ignorados).
 			if (!AllEdgesConnected(adjacency, routes))
 			{
 				result.Reason =
@@ -131,8 +100,6 @@ namespace graph_tp.Algorithms
 
 			result.Kind = oddVertices.Count == 0 ? EulerianKind.Circuit : EulerianKind.Path;
 
-			// 2/3. Inicializa o grafo auxiliar G' e seleciona o vértice inicial.
-			//      Preferencialmente um vértice de grau ímpar, se houver.
 			var remaining = new HashSet<int>(routes.Select(r => r.Id));
 			int current = oddVertices.Count > 0
 				? oddVertices.First()
@@ -141,8 +108,6 @@ namespace graph_tp.Algorithms
 
 			result.VertexSequence.Add(graph.GetVertex(current)!);
 
-			// 4. Enquanto houver arestas em G', caminhar escolhendo rotas que não sejam
-			//    pontes (a menos que seja a única rota disponível no vértice atual).
 			while (remaining.Count > 0)
 			{
 				logger?.LogAlgorithmAction($"Fleury: {remaining.Count} arestas restantes.");
@@ -151,19 +116,17 @@ namespace graph_tp.Algorithms
 					.ToList();
 
 				if (available.Count == 0)
-					break; // Segurança: não deveria ocorrer em grafo conexo válido.
+					break;
 
 				UndirectedRoute chosen;
 
 				if (available.Count == 1)
 				{
-					// b) Única aresta disponível: caminhar por ela.
 					chosen = available[0];
 					logger?.LogAlgorithmAction($"Fleury: única aresta disponível em {current} é {chosen.U} <-> {chosen.V}.");
 				}
 				else
 				{
-					// a) Selecionar uma aresta que não seja ponte em G'.
 					chosen = available.FirstOrDefault(r => !IsBridge(adjacency, remaining, current, r))
 							 ?? available[0];
 					logger?.LogAlgorithmAction($"Fleury: aresta escolhida em {current} = {chosen.U} <-> {chosen.V}.");
@@ -171,7 +134,6 @@ namespace graph_tp.Algorithms
 
 				int next = chosen.Other(current);
 
-				// c) Caminhar de v para w e remover a aresta de G'.
 				remaining.Remove(chosen.Id);
 				result.RouteSequence.Add(chosen.Original);
 				result.VertexSequence.Add(graph.GetVertex(next)!);
@@ -185,8 +147,6 @@ namespace graph_tp.Algorithms
 			return result;
 		}
 
-		// Verifica se todas as rotas estão em um único componente conexo, partindo
-		// de um extremo qualquer e visitando os vértices que possuem rotas incidentes.
 		private static bool AllEdgesConnected(
 			Dictionary<int, List<UndirectedRoute>> adjacency,
 			List<UndirectedRoute> routes)
@@ -194,14 +154,11 @@ namespace graph_tp.Algorithms
 			int start = routes[0].U;
 			var reachable = ReachableVertices(adjacency, new HashSet<int>(routes.Select(r => r.Id)), start);
 
-			// Todo vértice que possui pelo menos uma rota incidente deve ser alcançável.
 			return adjacency
 				.Where(kv => kv.Value.Count > 0)
 				.All(kv => reachable.Contains(kv.Key));
 		}
 
-		// Conta/retorna os vértices alcançáveis a partir de 'start' usando apenas as
-		// rotas ainda presentes em G' (conjunto 'remaining').
 		private static HashSet<int> ReachableVertices(
 			Dictionary<int, List<UndirectedRoute>> adjacency,
 			HashSet<int> remaining,
@@ -228,9 +185,6 @@ namespace graph_tp.Algorithms
 
 			return visited;
 		}
-
-		// Uma rota {v,w} é ponte se sua remoção reduz o número de vértices alcançáveis
-		// a partir de v, ou seja, ela é o único elo entre dois trechos da malha.
 		private static bool IsBridge(
 			Dictionary<int, List<UndirectedRoute>> adjacency,
 			HashSet<int> remaining,
