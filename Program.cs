@@ -196,7 +196,10 @@ class Program
 
 			OutputFormatter.PrintSuccess($"Grafo carregado com sucesso!");
 			OutputFormatter.PrintGraphInfo(_currentGraph);
-			
+
+			OutputFormatter.PrintInfo($"Informações do grafo: ");
+			OutputFormatter.PrintInfo($"{_currentGraph.GetRepresentationReport()}");
+
 			if (_logger.IsActive)
 			{
 				OutputFormatter.PrintInfo($"Log ativo: logs/{Path.GetFileNameWithoutExtension(filePath)}_{DateTime.Now:yyyyMMdd}.log");
