@@ -1,0 +1,19 @@
+Método de Bellman-Ford – Algoritmo
+
+1. para todo vértice v ∈ V(G) faça
+   a. dist[v] ← ∞;                    // Inicializar distâncias
+   b. pred[v] ← ∅;                    // Inicializar predecessores
+
+2. dist[s] ← 0;                       // Fazer distância da raiz igual a zero
+
+3. para i = 1, ..., |V(G)| − 1 faça
+   altera ← false;                    // Inicializa variável “altera”
+
+   para cada (v, w) ∈ E(G) faça
+      se dist[w] > dist[v] + dᵥw então // Se aresta está tensa?
+         i.   dist[w] ← dist[v] + dᵥw; // Atualizar a distância
+         ii.  pred[w] ← v;             // Atualizar predecessor de w
+         iii. altera ← true;           // Atualizar variável “altera”
+
+   se altera == false                 // verifica valor de “altera”
+      i ← |V(G)|                      // altera i, para sair da repetição

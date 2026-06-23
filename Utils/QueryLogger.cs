@@ -2,109 +2,114 @@ namespace graph_tp.Utils;
 
 public class QueryLogger : IDisposable
 {
+    private readonly object _sync = new();
     private StreamWriter? _writer;
     private string? _currentLogFile;
     private bool _disposed;
 
     public bool IsActive => _writer != null;
+    public string? CurrentLogFile => _currentLogFile;
 
-    public void StartLogging(string graphFileName)
+    public void StartSession(string? graphFileName = null)
     {
-        CloseCurrentLog();
-
-        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(graphFileName);
-        string dateString = DateTime.Now.ToString("yyyyMMdd");
-        string logFileName = $"{fileNameWithoutExt}_{dateString}.log";
-        
-        string logDirectory = "logs";
-        if (!Directory.Exists(logDirectory))
+        lock (_sync)
         {
-            Directory.CreateDirectory(logDirectory);
-        }
+            CloseCurrentLogInternal();
 
-        _currentLogFile = Path.Combine(logDirectory, logFileName);
-        _writer = new StreamWriter(_currentLogFile, append: true);
-        
-        LogSeparator();
-        LogMessage($"Sessão iniciada: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-        LogMessage($"Arquivo carregado: {graphFileName}");
-        LogSeparator();
-        _writer.Flush();
+            string logDirectory = "logs";
+            Directory.CreateDirectory(logDirectory);
+
+            string sessionStamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+            string graphPrefix = string.IsNullOrWhiteSpace(graphFileName)
+                ? "session"
+                : Path.GetFileNameWithoutExtension(graphFileName);
+
+            _currentLogFile = Path.Combine(logDirectory, $"{graphPrefix}_{sessionStamp}.log");
+            _writer = new StreamWriter(_currentLogFile, append: false) { AutoFlush = true };
+
+            WriteLineInternal("=== Sessao iniciada ===");
+            WriteLineInternal($"Inicio: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+
+            if (!string.IsNullOrWhiteSpace(graphFileName))
+                WriteLineInternal($"Grafo carregado: {graphFileName}");
+        }
     }
+
+    public void LogUserAction(string message) => WriteEntry("USUARIO", message);
+    public void LogSystemAction(string message) => WriteEntry("SISTEMA", message);
+    public void LogAlgorithmAction(string message) => WriteEntry("ALGORITMO", message);
+    public void LogError(string message) => WriteEntry("ERRO", message);
 
     public void LogGraphInfo(int nodeCount, int edgeCount)
     {
-        if (_writer == null) return;
-
-        LogMessage($"Informações do Grafo:");
-        LogMessage($"  - Vértices: {nodeCount}");
-        LogMessage($"  - Arestas: {edgeCount}");
-        _writer.Flush();
+        WriteEntry("GRAFO", $"Vertices: {nodeCount}; Arestas: {edgeCount}");
     }
 
     public void LogAlgorithmExecution(string algorithmName, string parameters, string result)
     {
-        if (_writer == null) return;
+        lock (_sync)
+        {
+            if (_writer == null) return;
 
-        LogSeparator();
-        LogMessage($"Algoritmo: {algorithmName}");
-        LogMessage($"Timestamp: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-        
-        if (!string.IsNullOrEmpty(parameters))
-        {
-            LogMessage($"Parâmetros: {parameters}");
-        }
-        
-        LogMessage($"Resultado:");
-        foreach (var line in result.Split('\n'))
-        {
-            if (!string.IsNullOrWhiteSpace(line))
+            WriteLineInternal("--- Execucao de algoritmo ---");
+            WriteLineInternal($"Algoritmo: {algorithmName}");
+            WriteLineInternal($"Horario: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+
+            if (!string.IsNullOrWhiteSpace(parameters))
+                WriteLineInternal($"Parametros: {parameters}");
+
+            if (!string.IsNullOrWhiteSpace(result))
             {
-                LogMessage($"  {line.TrimEnd()}");
+                WriteLineInternal("Resultado:");
+                foreach (var line in result.Split('\n'))
+                {
+                    var trimmed = line.TrimEnd();
+                    if (!string.IsNullOrWhiteSpace(trimmed))
+                        WriteLineInternal($"  {trimmed}");
+                }
             }
         }
-        
-        _writer.Flush();
-    }
-
-    public void LogError(string error)
-    {
-        if (_writer == null) return;
-
-        LogMessage($"[ERRO] {error}");
-        _writer.Flush();
-    }
-
-    private void LogMessage(string message)
-    {
-        _writer?.WriteLine(message);
-    }
-
-    private void LogSeparator()
-    {
-        _writer?.WriteLine(new string('-', 70));
     }
 
     public void CloseCurrentLog()
     {
-        if (_writer != null)
+        lock (_sync)
         {
-            LogSeparator();
-            LogMessage($"Sessão encerrada: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            LogSeparator();
-            _writer.Flush();
-            _writer.Close();
-            _writer.Dispose();
-            _writer = null;
+            CloseCurrentLogInternal();
         }
+    }
+
+    private void WriteEntry(string category, string message)
+    {
+        lock (_sync)
+        {
+            if (_writer == null) return;
+            WriteLineInternal($"[{DateTime.Now:HH:mm:ss}] [{category}] {message}");
+        }
+    }
+
+    private void WriteLineInternal(string message)
+    {
+        _writer?.WriteLine(message);
+    }
+
+    private void CloseCurrentLogInternal()
+    {
+        if (_writer == null)
+            return;
+
+        WriteLineInternal($"Fim: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        WriteLineInternal("=== Sessao encerrada ===");
+        _writer.Dispose();
+        _writer = null;
     }
 
     public void Dispose()
     {
-        if (!_disposed)
-        {
-            CloseCurrentLog();
-            _disposed = true;
-        }
+        if (_disposed)
+            return;
+
+        CloseCurrentLog();
+        _disposed = true;
     }
 }

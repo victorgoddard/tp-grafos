@@ -1,0 +1,144 @@
+=== Sessao iniciada ===
+Inicio: 2026-06-23 03:13:05
+[03:13:05] [USUARIO] Programa iniciado
+[03:13:09] [USUARIO] Opção escolhida: 1
+[03:13:09] [SISTEMA] Opção 1 selecionada: carregar grafo
+[03:13:10] [USUARIO] Arquivo DIMACS escolhido: 2
+[03:13:10] [USUARIO] Grafo carregado com sucesso: /home/goddard/Área de trabalho/Projetos/tp-grafos/Data/grafo02.dimacs
+[03:13:10] [GRAFO] Vertices: 5; Arestas: 6
+[03:13:14] [USUARIO] Opção escolhida: 2
+[03:13:14] [SISTEMA] Opção 2 selecionada: Bellman-Ford
+[03:13:14] [SISTEMA] Iniciando Bellman-Ford
+[03:13:17] [USUARIO] Vértice de origem configurado: 1
+[03:13:17] [ALGORITMO] Bellman-Ford iniciado com origem 1.
+[03:13:17] [ALGORITMO] Bellman-Ford: 5 vértices identificados para inicialização.
+[03:13:17] [ALGORITMO] Bellman-Ford: distância de 1 inicializada como INF.
+[03:13:17] [ALGORITMO] Bellman-Ford: distância de 2 inicializada como INF.
+[03:13:17] [ALGORITMO] Bellman-Ford: distância de 3 inicializada como INF.
+[03:13:17] [ALGORITMO] Bellman-Ford: distância de 4 inicializada como INF.
+[03:13:17] [ALGORITMO] Bellman-Ford: distância de 5 inicializada como INF.
+[03:13:17] [ALGORITMO] Bellman-Ford: distância da origem 1 definida como 0.
+[03:13:17] [ALGORITMO] Bellman-Ford: início da iteração 1 de 4.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 1 -> 2 com custo 4.
+[03:13:17] [ALGORITMO] Bellman-Ford: relaxamento aplicado em 2. Distância anterior ∞, nova 4 via 1.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 1 -> 3 com custo 6.
+[03:13:17] [ALGORITMO] Bellman-Ford: relaxamento aplicado em 3. Distância anterior ∞, nova 6 via 1.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 2 -> 3 com custo 2.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 2 -> 5 com custo 7.
+[03:13:17] [ALGORITMO] Bellman-Ford: relaxamento aplicado em 5. Distância anterior ∞, nova 11 via 2.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 3 -> 4 com custo 3.
+[03:13:17] [ALGORITMO] Bellman-Ford: relaxamento aplicado em 4. Distância anterior ∞, nova 9 via 3.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 4 -> 5 com custo 5.
+[03:13:17] [ALGORITMO] Bellman-Ford: início da iteração 2 de 4.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 1 -> 2 com custo 4.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 1 -> 3 com custo 6.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 2 -> 3 com custo 2.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 2 -> 5 com custo 7.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 3 -> 4 com custo 3.
+[03:13:17] [ALGORITMO] Bellman-Ford: avaliando aresta 4 -> 5 com custo 5.
+[03:13:17] [ALGORITMO] Bellman-Ford: nenhuma alteração na iteração 2; encerrando antecipadamente.
+[03:13:17] [ALGORITMO] Bellman-Ford concluído.
+[03:13:17] [USUARIO] Bellman-Ford executado com sucesso
+[03:13:28] [USUARIO] Opção escolhida: 3
+[03:13:28] [SISTEMA] Opção 3 selecionada: Ford-Fulkerson
+[03:13:28] [SISTEMA] Iniciando Ford-Fulkerson
+[03:13:33] [USUARIO] Vértice de origem configurado: 3
+[03:13:36] [USUARIO] Vértice de destino configurado: 2
+[03:13:36] [ALGORITMO] Ford-Fulkerson: mapeados 5 vértices para a matriz residual.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: capacidade registrada 0 -> 1 = 10.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: capacidade registrada 0 -> 2 = 5.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: capacidade registrada 1 -> 2 = 8.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: capacidade registrada 1 -> 4 = 9.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: capacidade registrada 2 -> 3 = 6.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: capacidade registrada 3 -> 4 = 10.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: execução principal iniciada entre 2 e 1.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: BFS iniciado a partir da fonte 2.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: vértice 2 removido da fila.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: aresta direta residual 2 -> 3 disponível com capacidade 6.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: vértice 3 removido da fila.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: aresta direta residual 3 -> 4 disponível com capacidade 10.
+[03:13:36] [ALGORITMO] Ford-Fulkerson: vértice 4 removido da fila.
+[03:13:36] [ALGORITMO] Ford-Fulkerson concluído com fluxo máximo 0.
+[03:13:36] [USUARIO] Ford-Fulkerson executado com sucesso
+[03:13:40] [USUARIO] Opção escolhida: 3
+[03:13:40] [SISTEMA] Opção 3 selecionada: Ford-Fulkerson
+[03:13:40] [SISTEMA] Iniciando Ford-Fulkerson
+[03:13:41] [USUARIO] Vértice de origem configurado: 1
+[03:13:43] [USUARIO] Vértice de destino configurado: 5
+[03:13:43] [ALGORITMO] Ford-Fulkerson: mapeados 5 vértices para a matriz residual.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: capacidade registrada 0 -> 1 = 10.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: capacidade registrada 0 -> 2 = 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: capacidade registrada 1 -> 2 = 8.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: capacidade registrada 1 -> 4 = 9.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: capacidade registrada 2 -> 3 = 6.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: capacidade registrada 3 -> 4 = 10.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: execução principal iniciada entre 0 e 4.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: BFS iniciado a partir da fonte 0.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 0 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 0 -> 1 disponível com capacidade 10.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 0 -> 2 disponível com capacidade 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 1 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 1 -> 4 disponível com capacidade 9.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: caminho aumentante encontrado, calculando gargalo.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: gargalo do caminho aumentante = 9.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 1 -> 4 para 9.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 0 -> 1 para 9.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: caminho 0 -> 1 -> 4 aplicado; fluxo total = 9.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: BFS iniciado a partir da fonte 0.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 0 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 0 -> 1 disponível com capacidade 1.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 0 -> 2 disponível com capacidade 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 1 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 2 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 2 -> 3 disponível com capacidade 6.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 3 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 3 -> 4 disponível com capacidade 10.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: caminho aumentante encontrado, calculando gargalo.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: gargalo do caminho aumentante = 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 3 -> 4 para 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 2 -> 3 para 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 0 -> 2 para 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: caminho 0 -> 2 -> 3 -> 4 aplicado; fluxo total = 14.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: BFS iniciado a partir da fonte 0.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 0 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 0 -> 1 disponível com capacidade 1.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 1 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 1 -> 2 disponível com capacidade 8.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 2 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 2 -> 3 disponível com capacidade 1.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 3 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: aresta direta residual 3 -> 4 disponível com capacidade 5.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: caminho aumentante encontrado, calculando gargalo.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: gargalo do caminho aumentante = 1.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 3 -> 4 para 6.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 2 -> 3 para 6.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 1 -> 2 para 1.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: fluxo direto atualizado em 0 -> 1 para 10.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: caminho 0 -> 1 -> 2 -> 3 -> 4 aplicado; fluxo total = 15.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: BFS iniciado a partir da fonte 0.
+[03:13:43] [ALGORITMO] Ford-Fulkerson: vértice 0 removido da fila.
+[03:13:43] [ALGORITMO] Ford-Fulkerson concluído com fluxo máximo 15.
+[03:13:43] [USUARIO] Ford-Fulkerson executado com sucesso
+[03:13:48] [USUARIO] Opção escolhida: 3
+[03:13:48] [SISTEMA] Opção 3 selecionada: Ford-Fulkerson
+[03:13:48] [SISTEMA] Iniciando Ford-Fulkerson
+[03:13:55] [USUARIO] Vértice de origem configurado: 4
+[03:13:57] [USUARIO] Vértice de destino configurado: 4
+[03:13:57] [ALGORITMO] Ford-Fulkerson: mapeados 5 vértices para a matriz residual.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: capacidade registrada 0 -> 1 = 10.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: capacidade registrada 0 -> 2 = 5.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: capacidade registrada 1 -> 2 = 8.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: capacidade registrada 1 -> 4 = 9.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: capacidade registrada 2 -> 3 = 6.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: capacidade registrada 3 -> 4 = 10.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: execução principal iniciada entre 3 e 3.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: BFS iniciado a partir da fonte 3.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: vértice 3 removido da fila.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: aresta direta residual 3 -> 4 disponível com capacidade 10.
+[03:13:57] [ALGORITMO] Ford-Fulkerson: vértice 4 removido da fila.
+[03:13:57] [ALGORITMO] Ford-Fulkerson concluído com fluxo máximo 0.
+[03:13:57] [USUARIO] Ford-Fulkerson executado com sucesso
+[03:14:01] [USUARIO] Opção escolhida: 8
+[03:14:01] [USUARIO] Usuário encerrou a aplicação
+Fim: 2026-06-23 03:14:01
+=== Sessao encerrada ===

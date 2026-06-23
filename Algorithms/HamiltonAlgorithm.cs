@@ -1,4 +1,5 @@
 using graph_tp.Models;
+using graph_tp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,16 +30,19 @@ namespace graph_tp.Algorithms
 			public string Reason { get; set; } = string.Empty;
 		}
 
-		public static HamiltonianResult RunHamiltonian(Graph graph)
+		public static HamiltonianResult RunHamiltonian(Graph graph, QueryLogger? logger = null)
 		{
 			var result = new HamiltonianResult();
+			logger?.LogAlgorithmAction("Hamiltoniano iniciado.");
 
 			var vertexIds = graph.GetAllvertexs().Select(v => v.GetHashCode()).ToList();
 			int n = vertexIds.Count;
+			logger?.LogAlgorithmAction($"Hamiltoniano: {n} vértices identificados.");
 
 			if (n == 0)
 			{
 				result.Reason = "Não há hubs cadastrados.";
+				logger?.LogAlgorithmAction("Hamiltoniano: grafo vazio.");
 				return result;
 			}
 
@@ -49,6 +53,7 @@ namespace graph_tp.Algorithms
 				var only = graph.GetVertex(vertexIds[0])!;
 				result.Cycle.Add(only);
 				result.Cycle.Add(only);
+				logger?.LogAlgorithmAction("Hamiltoniano: caso trivial com um único vértice.");
 				return result;
 			}
 
@@ -68,6 +73,7 @@ namespace graph_tp.Algorithms
 
 				adjacent[u, v] = true;
 				adjacent[v, u] = true;
+				logger?.LogAlgorithmAction($"Hamiltoniano: adjacência registrada entre {vertexIds[u]} e {vertexIds[v]}.");
 			}
 
 			// Backtracking iniciando sempre pelo hub 0 (qualquer hub serve como início,
@@ -77,8 +83,9 @@ namespace graph_tp.Algorithms
 
 			path[0] = 0;
 			used[0] = true;
+			logger?.LogAlgorithmAction($"Hamiltoniano: backtracking iniciado a partir do vértice {vertexIds[0]}.");
 
-			if (Solve(adjacent, path, used, n, 1))
+			if (Solve(adjacent, path, used, n, 1, vertexIds, logger))
 			{
 				result.IsPossible = true;
 				foreach (int idx in path)
@@ -86,12 +93,14 @@ namespace graph_tp.Algorithms
 
 				// Fecha o ciclo retornando ao hub inicial.
 				result.Cycle.Add(graph.GetVertex(vertexIds[path[0]])!);
+				logger?.LogAlgorithmAction("Hamiltoniano: ciclo encontrado com sucesso.");
 			}
 			else
 			{
 				result.Reason =
 					"Não existe um ciclo que visite todos os hubs exatamente uma vez " +
 					"retornando ao ponto de partida (grafo sem ciclo hamiltoniano).";
+				logger?.LogAlgorithmAction("Hamiltoniano: nenhuma solução encontrada.");
 			}
 
 			return result;
@@ -99,11 +108,12 @@ namespace graph_tp.Algorithms
 
 		// Tenta posicionar um hub na posição 'pos' do trajeto. Quando todos os hubs
 		// foram posicionados, verifica se o último se conecta de volta ao inicial.
-		private static bool Solve(bool[,] adjacent, int[] path, bool[] used, int n, int pos)
+		private static bool Solve(bool[,] adjacent, int[] path, bool[] used, int n, int pos, List<int> vertexIds, QueryLogger? logger)
 		{
 			if (pos == n)
 			{
 				// Todos os hubs visitados: o ciclo só é válido se o último retornar ao primeiro.
+				logger?.LogAlgorithmAction($"Hamiltoniano: verificação final entre {vertexIds[path[pos - 1]]} e {vertexIds[path[0]]}.");
 				return adjacent[path[pos - 1], path[0]];
 			}
 
@@ -116,14 +126,20 @@ namespace graph_tp.Algorithms
 				if (!adjacent[path[pos - 1], candidate])
 					continue;
 
+				logger?.LogAlgorithmAction($"Hamiltoniano: candidato {vertexIds[candidate]} testado na posição {pos}.");
+
 				path[pos] = candidate;
 				used[candidate] = true;
 
-				if (Solve(adjacent, path, used, n, pos + 1))
+				if (Solve(adjacent, path, used, n, pos + 1, vertexIds, logger))
+				{
+					logger?.LogAlgorithmAction($"Hamiltoniano: candidato {vertexIds[candidate]} confirmado na posição {pos}.");
 					return true;
+				}
 
 				// Retrocede: o candidato não levou a uma solução.
 				used[candidate] = false;
+				logger?.LogAlgorithmAction($"Hamiltoniano: retrocedendo do candidato {vertexIds[candidate]} na posição {pos}.");
 			}
 
 			return false;

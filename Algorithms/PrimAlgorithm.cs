@@ -1,4 +1,5 @@
 using graph_tp.Models;
+using graph_tp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,16 +15,19 @@ namespace graph_tp.Algorithms
 			public bool IsConnected { get; set; }
 		}
 
-		public static MinimumSpanningTree RunPrim(Graph graph, int? root = null)
+		public static MinimumSpanningTree RunPrim(Graph graph, int? root = null, QueryLogger? logger = null)
 		{
 			var result = new MinimumSpanningTree();
 			var allVertexIds = graph.GetAllvertexs()
 									.Select(v => v.GetHashCode())
 									.ToList();
 
+			logger?.LogAlgorithmAction($"Prim iniciado com {allVertexIds.Count} vértices.");
+
 			if (allVertexIds.Count == 0)
 			{
 				result.IsConnected = true;
+				logger?.LogAlgorithmAction("Prim: grafo vazio, MST trivial concluída.");
 				return result;
 			}
 
@@ -32,10 +36,13 @@ namespace graph_tp.Algorithms
 			if (!graph.Containsvertex(r))
 				throw new ArgumentException($"Vértice raiz {r} não existe no grafo.");
 
+			logger?.LogAlgorithmAction($"Prim: raiz definida como {r}.");
+
 			var inTree = new HashSet<int> { r };
 
 			while (inTree.Count != allVertexIds.Count)
 			{
+				logger?.LogAlgorithmAction($"Prim: árvore parcial possui {inTree.Count}/{allVertexIds.Count} vértices.");
 				Edge? minEdge = null;
 
 				foreach (var edge in graph.GetAllEdges())
@@ -50,13 +57,19 @@ namespace graph_tp.Algorithms
 					if (!crossesCut)
 						continue;
 
+					logger?.LogAlgorithmAction($"Prim: aresta candidata {sourceId} -- {targetId} com custo {edge.LoadValue:0.###} cruzando o corte.");
+
 					if (minEdge == null || edge.LoadValue < minEdge.LoadValue)
+					{
 						minEdge = edge;
+						logger?.LogAlgorithmAction($"Prim: aresta {sourceId} -- {targetId} torna-se a melhor candidata no momento.");
+					}
 				}
 
 				if (minEdge == null)
 				{
 					result.IsConnected = false;
+					logger?.LogAlgorithmAction("Prim: nenhuma aresta cruzando o corte foi encontrada; grafo desconexo.");
 					return result;
 				}
 
@@ -68,9 +81,11 @@ namespace graph_tp.Algorithms
 
 				result.Edges.Add(minEdge);
 				result.TotalCost += minEdge.LoadValue;
+				logger?.LogAlgorithmAction($"Prim: aresta selecionada {minEdge.Source.GetHashCode()} -- {minEdge.Target.GetHashCode()} com custo {minEdge.LoadValue:0.###}. Novo vértice incluído: {newVertexId}.");
 			}
 
 			result.IsConnected = true;
+			logger?.LogAlgorithmAction($"Prim concluído com custo total {result.TotalCost:0.###}.");
 			return result;
 		}
 

@@ -1,0 +1,12 @@
+=== Sessao iniciada ===
+Inicio: 2026-06-23 03:12:20
+[03:12:20] [USUARIO] Programa iniciado
+[03:12:27] [USUARIO] Opção escolhida: 1
+[03:12:27] [SISTEMA] Opção 1 selecionada: carregar grafo
+[03:12:28] [USUARIO] Arquivo DIMACS escolhido: 1
+[03:12:28] [USUARIO] Grafo carregado com sucesso: /home/goddard/Área de trabalho/Projetos/tp-grafos/Data/grafo01.dimacs
+[03:12:28] [GRAFO] Vertices: 6; Arestas: 12
+[03:12:58] [USUARIO] Opção escolhida: 8
+[03:12:58] [USUARIO] Usuário encerrou a aplicação
+Fim: 2026-06-23 03:12:58
+=== Sessao encerrada ===

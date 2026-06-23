@@ -1,4 +1,5 @@
 using graph_tp.Models;
+using graph_tp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,9 +65,10 @@ namespace graph_tp.Algorithms
 			public bool IsPossible => Kind != EulerianKind.None;
 		}
 
-		public static EulerianResult RunFleury(Graph graph)
+		public static EulerianResult RunFleury(Graph graph, QueryLogger? logger = null)
 		{
 			var result = new EulerianResult();
+			logger?.LogAlgorithmAction("Fleury iniciado.");
 
 			// Constrói a representação não direcionada (cada rota vira uma aresta {u,v}).
 			var routes = new List<UndirectedRoute>();
@@ -74,6 +76,7 @@ namespace graph_tp.Algorithms
 
 			foreach (var vertex in graph.GetAllvertexs())
 				adjacency[vertex.GetHashCode()] = new List<UndirectedRoute>();
+			logger?.LogAlgorithmAction($"Fleury: {adjacency.Count} vértices carregados na estrutura auxiliar.");
 
 			int edgeId = 0;
 			foreach (var edge in graph.GetAllEdges())
@@ -86,11 +89,13 @@ namespace graph_tp.Algorithms
 
 				adjacency[u].Add(route);
 				adjacency[v].Add(route);
+				logger?.LogAlgorithmAction($"Fleury: rota registrada {u} <-> {v}.");
 			}
 
 			if (routes.Count == 0)
 			{
 				result.Reason = "Não há rotas cadastradas para inspecionar.";
+				logger?.LogAlgorithmAction("Fleury: nenhuma rota disponível.");
 				return result;
 			}
 
@@ -108,8 +113,10 @@ namespace graph_tp.Algorithms
 				result.Reason =
 					$"Existem {oddVertices.Count} hubs com número ímpar de rotas incidentes. " +
 					"Um percurso euleriano exige no máximo 2 hubs de grau ímpar.";
+				logger?.LogAlgorithmAction($"Fleury: falha por {oddVertices.Count} vértices de grau ímpar.");
 				return result;
 			}
+			logger?.LogAlgorithmAction($"Fleury: vértices de grau ímpar = {oddVertices.Count}.");
 
 			// Verifica conectividade: todas as rotas precisam pertencer a um único
 			// componente conexo (hubs isolados, sem rotas, são ignorados).
@@ -118,6 +125,7 @@ namespace graph_tp.Algorithms
 				result.Reason =
 					"A malha de rotas é desconexa: não é possível percorrer todas as rotas " +
 					"em um único trajeto contínuo.";
+				logger?.LogAlgorithmAction("Fleury: grafo desconexo, encerrando.");
 				return result;
 			}
 
@@ -129,6 +137,7 @@ namespace graph_tp.Algorithms
 			int current = oddVertices.Count > 0
 				? oddVertices.First()
 				: routes[0].U;
+			logger?.LogAlgorithmAction($"Fleury: vértice inicial definido como {current}.");
 
 			result.VertexSequence.Add(graph.GetVertex(current)!);
 
@@ -136,6 +145,7 @@ namespace graph_tp.Algorithms
 			//    pontes (a menos que seja a única rota disponível no vértice atual).
 			while (remaining.Count > 0)
 			{
+				logger?.LogAlgorithmAction($"Fleury: {remaining.Count} arestas restantes.");
 				var available = adjacency[current]
 					.Where(r => remaining.Contains(r.Id))
 					.ToList();
@@ -149,12 +159,14 @@ namespace graph_tp.Algorithms
 				{
 					// b) Única aresta disponível: caminhar por ela.
 					chosen = available[0];
+					logger?.LogAlgorithmAction($"Fleury: única aresta disponível em {current} é {chosen.U} <-> {chosen.V}.");
 				}
 				else
 				{
 					// a) Selecionar uma aresta que não seja ponte em G'.
 					chosen = available.FirstOrDefault(r => !IsBridge(adjacency, remaining, current, r))
 							 ?? available[0];
+					logger?.LogAlgorithmAction($"Fleury: aresta escolhida em {current} = {chosen.U} <-> {chosen.V}.");
 				}
 
 				int next = chosen.Other(current);
@@ -163,9 +175,12 @@ namespace graph_tp.Algorithms
 				remaining.Remove(chosen.Id);
 				result.RouteSequence.Add(chosen.Original);
 				result.VertexSequence.Add(graph.GetVertex(next)!);
+				logger?.LogAlgorithmAction($"Fleury: deslocamento {current} -> {next} executado.");
 
 				current = next;
 			}
+
+			logger?.LogAlgorithmAction($"Fleury concluído com {result.RouteSequence.Count} rotas percorridas.");
 
 			return result;
 		}

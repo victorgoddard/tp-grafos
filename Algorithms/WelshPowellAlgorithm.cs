@@ -1,4 +1,5 @@
 using graph_tp.Models;
+using graph_tp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,15 +28,20 @@ namespace graph_tp.Algorithms
 			public int TotalShifts => Shifts.Count;
 		}
 
-		public static MaintenanceSchedule RunWelshPowell(Graph graph)
+		public static MaintenanceSchedule RunWelshPowell(Graph graph, QueryLogger? logger = null)
 		{
 			var result = new MaintenanceSchedule();
 			var nodes = graph.GetAllEdges()
 							 .Select((edge, index) => new RouteNode(index, edge))
 							 .ToList();
 
+			logger?.LogAlgorithmAction($"Welsh-Powell iniciado com {nodes.Count} rotas.");
+
 			if (nodes.Count == 0)
+			{
+				logger?.LogAlgorithmAction("Welsh-Powell: nenhuma rota encontrada.");
 				return result;
+			}
 
 			bool[,] conflict = new bool[nodes.Count, nodes.Count];
 
@@ -49,18 +55,21 @@ namespace graph_tp.Algorithms
 						conflict[j, i] = true;
 						nodes[i].Degree++;
 						nodes[j].Degree++;
+						logger?.LogAlgorithmAction($"Welsh-Powell: conflito detectado entre arestas {i} e {j}.");
 					}
 				}
 			}
 
 
 			var ordered = nodes.OrderByDescending(n => n.Degree).ToList();
+			logger?.LogAlgorithmAction("Welsh-Powell: rotas ordenadas por grau de conflito.");
 			int currentColor = 0;
 			int coloredCount = 0;
 
 			while (coloredCount < ordered.Count)
 			{
 				currentColor++;
+				logger?.LogAlgorithmAction($"Welsh-Powell: iniciando turno/cor {currentColor}.");
 
 				foreach (var node in ordered)
 				{
@@ -75,6 +84,7 @@ namespace graph_tp.Algorithms
 					{
 						node.Color = currentColor;
 						coloredCount++;
+						logger?.LogAlgorithmAction($"Welsh-Powell: aresta {node.Index} atribuída ao turno {currentColor}. Total coloridas: {coloredCount}/{ordered.Count}.");
 					}
 				}
 			}
@@ -87,6 +97,8 @@ namespace graph_tp.Algorithms
 
 				result.Shifts[node.Color].Add(node.Route);
 			}
+
+			logger?.LogAlgorithmAction($"Welsh-Powell concluído com {result.TotalShifts} turnos.");
 
 			return result;
 		}
