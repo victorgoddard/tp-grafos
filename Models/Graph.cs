@@ -1,96 +1,68 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using graph_tp.Models.Representations;
 
 namespace graph_tp.Models
 {
     public class Graph
     {
-        private readonly Dictionary<int, Vertex> _vertexes;
-        private readonly Dictionary<int, List<Edge>> _adjacencyList;
+        private IGraphRepresentation _representation;
+        private RepresentationKind _currentKind;
 
-        public int VertexCount => _vertexes.Count();
-        public int EdgesCount => _adjacencyList.Values.Sum(edges => edges.Count);
+        public int VertexCount => _representation.VertexCount;
+        public int EdgesCount => _representation.EdgeCount;
+        public RepresentationKind CurrentRepresentation => _currentKind;
 
         public Graph()
         {
-            _vertexes = new Dictionary<int, Vertex>();
-            _adjacencyList = new Dictionary<int, List<Edge>>();
+            _currentKind = RepresentationKind.AdjacencyList;
+            _representation = GraphRepresentationSelector.Create(_currentKind);
         }
 
-        public void AddVertex(Vertex vertex)
+        public void AddVertex(Vertex vertex) => _representation.AddVertex(vertex);
+
+        public void AddEdge(Edge edge) => _representation.AddEdge(edge);
+
+        public Vertex? GetVertex(int id) => _representation.GetVertex(id);
+
+        public List<Edge> GetOutgoingEdges(int vertexId) => _representation.GetOutgoingEdges(vertexId);
+
+        public List<Edge> GetIncomingEdges(int vertexId) => _representation.GetIncomingEdges(vertexId);
+
+        public IEnumerable<Vertex> GetAllvertexs() => _representation.GetAllVertices();
+
+        public IEnumerable<Edge> GetAllEdges() => _representation.GetAllEdges();
+
+        public bool Containsvertex(int vertexId) => _representation.ContainsVertex(vertexId);
+
+        public int GetOutDegree(int vertexId) => _representation.GetOutgoingEdges(vertexId).Count;
+
+        public int GetInDegree(int vertexId) => _representation.GetIncomingEdges(vertexId).Count;
+
+        // Mede a densidade e migra para a melhor estrutura, se necessário.
+        public void OptimizeRepresentation()
         {
-            if (!_vertexes.ContainsKey(vertex.GetHashCode()))
-            {
-                _vertexes[vertex.GetHashCode()] = vertex;
-                _adjacencyList[vertex.GetHashCode()] = new List<Edge>();
-            }
+            var best = GraphRepresentationSelector.Select(VertexCount, EdgesCount);
+            if (best == _currentKind) return;
+
+            var next = GraphRepresentationSelector.Create(best);
+            foreach (var vertex in _representation.GetAllVertices())
+                next.AddVertex(vertex);
+            foreach (var edge in _representation.GetAllEdges())
+                next.AddEdge(edge);
+
+            _representation = next;
+            _currentKind = best;
         }
 
-        public void AddEdge(Edge edge)
-        {
-            AddVertex(edge.Source);
-            AddVertex(edge.Target);
-
-            _adjacencyList[edge.Source.GetHashCode()].Add(edge);
-        }
-
-        public Vertex? GetVertex(int id)
-        {
-            return _vertexes.TryGetValue(id, out var vertex) ? vertex : null;
-        }
-
-        public List<Edge> GetOutgoingEdges(int vertexId)
-        {
-            return _adjacencyList.TryGetValue(vertexId, out var edges) ? edges : new List<Edge>();
-        }
-
-        public List<Edge> GetIncomingEdges(int vertexId)
-        {
-            var incoming = new List<Edge>();
-            foreach (var edges in _adjacencyList.Values)
-            {
-                incoming.AddRange(edges.Where(e => e.Target.GetHashCode() == vertexId));
-            }
-            return incoming;
-        }
-
-        public IEnumerable<Vertex> GetAllvertexs()
-        {
-            return _vertexes.Values;
-        }
-
-        public IEnumerable<Edge> GetAllEdges()
-        {
-            return _adjacencyList.Values.SelectMany(edges => edges);
-        }
-
-        public bool Containsvertex(int vertexId)
-        {
-            return _vertexes.ContainsKey(vertexId);
-        }
-
-        public int GetOutDegree(int vertexId)
-        {
-            return GetOutgoingEdges(vertexId).Count;
-        }
-
-        public int GetInDegree(int vertexId)
-        {
-            return GetIncomingEdges(vertexId).Count;
-        }
+        public string GetRepresentationReport()
+            => GraphRepresentationSelector.Report(VertexCount, EdgesCount, _currentKind);
 
         public Graph Clone()
         {
             var clone = new Graph();
 
-            foreach (var vertex in _vertexes.Values)
-            {
+            foreach (var vertex in _representation.GetAllVertices())
                 clone.AddVertex(new Vertex(vertex.GetHashCode(), vertex.Name));
-            }
 
             foreach (var edge in GetAllEdges())
             {
