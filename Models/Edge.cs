@@ -19,7 +19,7 @@ namespace graph_tp.Models
         public double Low { get; set; }
 
         public Vertex Source => _source;
-        public Vertex Target => _source;
+        public Vertex Target => _target;
         public double LoadValue => _loadValue;
         public double Capacity => _capacity;
 
