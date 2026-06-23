@@ -76,6 +76,7 @@ public static class DimacsParser
             graph.AddEdge(new Edge(sourceNode, targetNode, cost, capacity));
         }
 
+        graph.OptimizeRepresentation();
         return graph;
     }
 
@@ -83,7 +84,7 @@ public static class DimacsParser
     {
         using var writer = new StreamWriter(filePath);
         
-        writer.WriteLine($"{graph} {graph.EdgesCount}");
+        writer.WriteLine($"{graph.VertexCount} {graph.EdgesCount}");
 
         foreach (var edge in graph.GetAllEdges())
         {
